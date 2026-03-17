@@ -1,6 +1,7 @@
 const express = require("express");
 const cors = require("cors");
 const nodemailer = require("nodemailer");
+const rateLimit = require("express-rate-limit");
 require("dotenv").config();
 
 const app = express();
@@ -8,6 +9,13 @@ const PORT = process.env.PORT || 3005;
 
 app.use(cors());
 app.use(express.json());
+
+const contactLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 10,
+  message: "Too many requests. Try later.",
+});
+app.use("/contact", contactLimiter);
 
 const transporter = nodemailer.createTransport({
   service: "gmail",
