@@ -17,8 +17,23 @@ const transporter = nodemailer.createTransport({
   },
 });
 
-app.post("/contact", async (req, res) => {
-  const { name, email, subject, message } = req.body;
+app.post("/api/contact", async (req, res) => {
+  const { name, email, subject, message, captchaToken } = req.body;
+
+  const verifyUrl = `https://www.google.com/recaptcha/api/siteverify`;
+  const response = await axios.post(verifyUrl, null, {
+    params: {
+      secret:
+        app.get("env") === "production"
+          ? process.env.RECAPTCHA_SECRET_KEY_PROD
+          : process.env.RECAPTCHA_SECRET_KEY_DEV,
+      response: captchaToken,
+    },
+  });
+
+  if (!response.data.success) {
+    return res.status(400).json({ message: "Captcha failed" });
+  }
 
   try {
     const mailOptions = {
