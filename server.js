@@ -15,7 +15,7 @@ const contactLimiter = rateLimit({
   max: 10,
   message: "Too many requests. Try later.",
 });
-app.use("/contact", contactLimiter);
+app.use("/api/contact", contactLimiter);
 
 const transporter = nodemailer.createTransport({
   service: "gmail",
@@ -23,6 +23,10 @@ const transporter = nodemailer.createTransport({
     user: process.env.EMAIL_USER,
     pass: process.env.EMAIL_PASS,
   },
+});
+
+app.get("/", (req, res) => {
+  res.send("Mangalaam Global API is running.");
 });
 
 app.post("/api/contact", async (req, res) => {
@@ -61,8 +65,6 @@ app.post("/api/contact", async (req, res) => {
       .status(500)
       .json({ success: false, message: "Failed to send email" });
   }
-  // Make sure none of these checks are throwing a 403
-  res.status(200).json({ success: true });
 });
 
 app.listen(PORT, () => {
