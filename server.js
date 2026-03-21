@@ -8,7 +8,11 @@ require("dotenv").config();
 const app = express();
 const PORT = process.env.PORT || 3005;
 
-app.use(cors());
+app.use(
+  cors({
+    origin: ["https://mangalaam.co.in"],
+  }),
+);
 app.use(express.json());
 
 const contactLimiter = rateLimit({
