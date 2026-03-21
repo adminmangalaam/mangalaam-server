@@ -35,7 +35,7 @@ app.get("/", (req, res) => {
 });
 
 app.post("/api/contact", async (req, res) => {
-  const { name, email, subject, message, captchaToken } = req.body;
+  const { name, email, subject, message, captchaValue } = req.body;
 
   const verifyUrl = `https://www.google.com/recaptcha/api/siteverify`;
   const response = await axios.post(verifyUrl, null, {
@@ -44,7 +44,7 @@ app.post("/api/contact", async (req, res) => {
         app.get("env") === "production"
           ? process.env.RECAPTCHA_SECRET_KEY_PROD
           : process.env.RECAPTCHA_SECRET_KEY_DEV,
-      response: captchaToken,
+      response: captchaValue,
     },
   });
 
