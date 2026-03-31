@@ -8,7 +8,27 @@ require("dotenv").config();
 const app = express();
 const PORT = process.env.PORT || 3005;
 
-app.use(cors());
+const allowedOrigins = [
+  "https://mangalaam.co.in",
+  "https://www.mangalaam.co.in",
+  "http://www.mangalaam.co.in",
+  "http://localhost:5173", // or your local dev port
+];
+
+app.use(
+  cors({
+    origin: function (origin, callback) {
+      console.log("Request Origin:", origin);
+      if (!origin || allowedOrigins.indexOf(origin) !== -1) {
+        callback(null, true);
+      } else {
+        callback(new Error("Not allowed by CORS"));
+      }
+    },
+    methods: ["GET", "POST", "OPTIONS"],
+    credentials: true,
+  }),
+);
 
 app.options("*", cors());
 app.use(express.json());
