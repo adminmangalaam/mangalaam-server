@@ -8,11 +8,9 @@ require("dotenv").config();
 const app = express();
 const PORT = process.env.PORT || 3005;
 
-app.use(
-  cors({
-    origin: ["https://mangalaam.co.in"],
-  }),
-);
+app.use(cors());
+
+app.options("*", cors());
 app.use(express.json());
 
 const contactLimiter = rateLimit({
@@ -36,7 +34,7 @@ app.get("/", (req, res) => {
 
 app.post("/api/contact", async (req, res) => {
   const { name, email, subject, message, captchaValue } = req.body;
-
+  console.log("Received contact form submission:");
   const verifyUrl = `https://www.google.com/recaptcha/api/siteverify`;
   const response = await axios.post(verifyUrl, null, {
     params: {
@@ -56,7 +54,7 @@ app.post("/api/contact", async (req, res) => {
     const mailOptions = {
       from: email,
       to: process.env.EMAIL_USER,
-      subject: `Contact Form: ${subject}`,
+      subject: `Enquiry from website contact form: ${subject}`,
       text: `Name: ${name}\nEmail: ${email}\n\nMessage:\n${message}`,
     };
 
