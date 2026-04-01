@@ -56,12 +56,13 @@ app.post("/api/contact", async (req, res) => {
   const { name, email, subject, message, captchaValue } = req.body;
   console.log("Received contact form submission:");
   const verifyUrl = `https://www.google.com/recaptcha/api/siteverify`;
+  const isProd = process.env.NODE_ENV === "production";
+  const recaptchaSecret = isProd
+    ? process.env.RECAPTCHA_SECRET_KEY_PROD
+    : process.env.RECAPTCHA_SECRET_KEY_DEV;
   const response = await axios.post(verifyUrl, null, {
     params: {
-      secret:
-        app.get("env") === "production"
-          ? process.env.RECAPTCHA_SECRET_KEY_PROD
-          : process.env.RECAPTCHA_SECRET_KEY_DEV,
+      secret: recaptchaSecret,
       response: captchaValue,
     },
   });
