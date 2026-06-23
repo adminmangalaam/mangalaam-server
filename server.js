@@ -4,10 +4,11 @@ const cors = require("cors");
 const nodemailer = require("nodemailer");
 const rateLimit = require("express-rate-limit");
 const loginRouter = require("./routes/loginRoute");
+const connectDB = require("./db/connect");
 require("dotenv").config();
 
 const app = express();
-const PORT = process.env.PORT || 3005;
+const PORT = process.env.PORT || 5006;
 
 const allowedOrigins = [
   "https://mangalaam.co.in",
@@ -93,6 +94,7 @@ app.post("/api/contact", async (req, res) => {
 
 app.use("/admin", loginRouter);
 
-app.listen(PORT, () => {
+app.listen(PORT, async () => {
+  await connectDB();
   console.log(`Server is running on port ${PORT}`);
 });
