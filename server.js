@@ -3,6 +3,7 @@ const axios = require("axios");
 const cors = require("cors");
 const nodemailer = require("nodemailer");
 const rateLimit = require("express-rate-limit");
+const loginRouter = require("./routes/loginRoute");
 require("dotenv").config();
 
 const app = express();
@@ -18,7 +19,6 @@ const allowedOrigins = [
 app.use(
   cors({
     origin: function (origin, callback) {
-      console.log("Request Origin:", origin);
       if (!origin || allowedOrigins.indexOf(origin) !== -1) {
         callback(null, true);
       } else {
@@ -90,6 +90,8 @@ app.post("/api/contact", async (req, res) => {
       .json({ success: false, message: "Failed to send email" });
   }
 });
+
+app.use("/admin", loginRouter);
 
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
