@@ -1,12 +1,17 @@
 const express = require("express");
+const helment = require("helmet");
 const axios = require("axios");
 const cors = require("cors");
 const nodemailer = require("nodemailer");
 const rateLimit = require("express-rate-limit");
+// const loginRouter = require("./routes/loginRoute");
+// const connectDB = require("./db/connect");
 require("dotenv").config();
 
 const app = express();
-const PORT = process.env.PORT || 3005;
+const PORT = process.env.PORT || 5006;
+
+app.use(helmet());
 
 const allowedOrigins = [
   "https://mangalaam.co.in",
@@ -18,7 +23,6 @@ const allowedOrigins = [
 app.use(
   cors({
     origin: function (origin, callback) {
-      console.log("Request Origin:", origin);
       if (!origin || allowedOrigins.indexOf(origin) !== -1) {
         callback(null, true);
       } else {
@@ -71,11 +75,20 @@ app.post("/api/contact", async (req, res) => {
     return res.status(400).json({ message: "Captcha failed" });
   }
 
+  if (
+    typeof name !== "string" ||
+    typeof email !== "string" ||
+    typeof subject !== "string" ||
+    typeof message !== "string"
+  ) {
+    return res.status(400).json({ message: "Invalid input types" });
+  }
+
   try {
     const mailOptions = {
       from: email,
       to: process.env.EMAIL_USER,
-      subject: `Enquiry from website contact form: ${subject}`,
+      subject: `New enquiry from website contact form: ${subject}`,
       text: `Name: ${name}\nEmail: ${email}\n\nMessage:\n${message}`,
     };
 
@@ -91,6 +104,9 @@ app.post("/api/contact", async (req, res) => {
   }
 });
 
-app.listen(PORT, () => {
+// app.use("/admin", loginRouter);
+
+app.listen(PORT, async () => {
+  // await connectDB();
   console.log(`Server is running on port ${PORT}`);
 });
